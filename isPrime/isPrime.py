@@ -6,11 +6,9 @@ def isPrime(num):
     elif num % 2 == 0 or num < 2: 
         return False
     else:
-        i = math.floor(math.sqrt(num)) # use floor b/c decimal will never return a clean sqrt
-        while (i >= 3):
+        for i in range(3, math.floor(math.sqrt(num))):
             if num % i == 0:
-                return False
-            i -= 1
+                return False   
         return True        
 
 
