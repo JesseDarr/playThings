@@ -52,4 +52,3 @@ if __name__ == "__main__":
         p.starmap(portScan, zip(repeat(input[0]), input[1]))
     p.terminate()
     p.join() # avoids zombie processes
-    
