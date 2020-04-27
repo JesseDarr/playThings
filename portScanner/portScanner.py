@@ -3,7 +3,6 @@ import socket
 import sys
 from multiprocessing import Pool, cpu_count
 from itertools import repeat
-#import time
 
 def getUserInput():
     address = input("Enter IP or DNS address to scan: ")
@@ -13,7 +12,7 @@ def getUserInput():
     ### Input parsing and sanitization for different port range input syntaxes ###
     # if single port is entered and numbers are in range 0 - 65535
     if inputPortRange.isdigit() and int(inputPortRange) > 0 and int(inputPortRange) <= 65535:
-        ports = [inputPortRange]
+        ports = [int(inputPortRange)]
     # if single "-" and numbers on each side of it
     elif inputPortRange.count("-") == 1 and all([x.isdigit() for x in inputPortRange.split("-")]):
         # if numbers are in range 0 - 65535
@@ -27,13 +26,12 @@ def getUserInput():
     elif inputPortRange.count(",") >= 1 and all([x.isdigit() for x in inputPortRange.split(",")]):
         # if each number is in range 0 - 65535
         if all([int(x) > 0 and int(x) <= 65535 for x in inputPortRange.split(",")]):
-            ports = inputPortRange.split(",")
+            ports = [int(x) for x in inputPortRange.split(",")]
         else: print("Invalid input...exiting."); sys.exit()
     else: print("Invalid input...exiting."); sys.exit()
                 
     return (address, ports)
 
-### Need to add threading to this
 def portScan(address, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -48,9 +46,9 @@ def portScan(address, port):
         print(str(e))       # prints string of error
 
 if __name__ == "__main__":
-    input = getUserInput() # * splits the tuple and passes it into the function as 2 arguments
+    input = getUserInput()
 
-    with Pool(cpu_count()) as p: 
+    with Pool(cpu_count() * 2) as p: 
         p.starmap(portScan, zip(repeat(input[0]), input[1]))
     p.terminate()
     p.join() # avoids zombie processes
